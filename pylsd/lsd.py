@@ -4,6 +4,7 @@
 # @Author  : Gefu Tang (tanggefu@gmail.com)
 # @Link    : https://github.com/primetang/pylsd
 # @Version : 0.0.1
+from tempfile import TemporaryFile
 
 from .bindings.lsd_ctypes import *
 
@@ -12,8 +13,12 @@ def lsd(src):
     rows, cols = src.shape
     src = src.reshape(1, rows * cols).tolist()[0]
 
-    temp = os.path.abspath(str(np.random.randint(
-        1, 1000000)) + 'ntl.txt').replace('\\', '/')
+    tempfile = TemporaryFile()
+    temp = str(tempfile.name)
+    # temp = os.path.abspath(str(np.random.randint(
+    #     1, 1000000)) + 'ntl.txt').replace('\\', '/')
+
+    open(temp, "a").close()
 
     lens = len(src)
     src = (ctypes.c_double * lens)(*src)
@@ -23,6 +28,7 @@ def lsd(src):
     cnt = fp.read().strip().split(' ')
     fp.close()
     os.remove(temp)
+    #tempfile.close()
 
     count = int(cnt[0])
     dim = int(cnt[1])
